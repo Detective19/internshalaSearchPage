@@ -1,9 +1,7 @@
 // src/components/InternshipCard.jsx
 
-const DEFAULT_LOGO =
-  "https://internshala.com/static/images/common/internshala_og_image.png";
+import { useState } from "react";
 
-// DetailItem is intentionally kept in this file — only used by InternshipCard
 // eslint-disable-next-line react-refresh/only-export-components
 function DetailItem({ icon, label }) {
   return (
@@ -18,14 +16,51 @@ function InternshipCard({ internship }) {
   const {
     title,
     company_name,
+    company_logo,
     location_names,
     stipend,
     duration,
     start_date,
-    logo,
-    is_remote,
+    work_from_home,
     labels = [],
   } = internship;
+
+  const [logoError, setLogoError] = useState(false);
+
+  // Correct Internshala logo CDN path
+  const logoUrl = company_logo
+    ? company_logo.startsWith("http")
+      ? company_logo
+      : `https://internshala-uploads.internshala.com/logo/${company_logo}`
+    : null;
+
+  // Company initials fallback
+  const getInitials = (name) => {
+    if (!name) return "?";
+    return name
+      .split(" ")
+      .slice(0, 2)
+      .map((word) => word[0])
+      .join("")
+      .toUpperCase();
+  };
+
+  // Clean stipend
+const stipendText = () => {
+  const salary = stipend?.salary;
+  if (!salary || salary === "Unpaid") return "Unpaid";
+  // Remove ₹ and /month — we'll add our own clean format
+  const cleaned = String(salary)
+    .replace(/₹/g, "")
+    .replace(/\/month/gi, "")
+    .trim();
+  return `₹ ${cleaned}/month`;
+};
+
+  // Clean start date
+  const startDateText = start_date
+    ? start_date.replace("Starts", "").trim()
+    : "Not specified";
 
   return (
     <div className="bg-white rounded-xl border border-gray-200 p-5 hover:shadow-md transition-shadow duration-200 flex flex-col gap-3">
@@ -33,14 +68,23 @@ function InternshipCard({ internship }) {
       {/* TOP ROW: Logo + Title + Company */}
       <div className="flex items-start justify-between gap-3">
         <div className="flex items-start gap-3">
-          <img
-            src={logo || DEFAULT_LOGO}
-            alt={`${company_name} logo`}
-            className="w-12 h-12 object-contain rounded border border-gray-100 p-1"
-            onError={(e) => {
-              e.target.src = DEFAULT_LOGO;
-            }}
-          />
+
+          {/* Logo or Initials Avatar */}
+          {logoUrl && !logoError ? (
+            <img
+              src={logoUrl}
+              alt={`${company_name} logo`}
+              className="w-12 h-12 object-contain rounded border border-gray-100 p-1 flex-shrink-0"
+              onError={() => setLogoError(true)}
+            />
+          ) : (
+            <div className="w-12 h-12 rounded border border-gray-100 flex-shrink-0 bg-blue-50 flex items-center justify-center">
+              <span className="text-blue-600 font-bold text-sm">
+                {getInitials(company_name)}
+              </span>
+            </div>
+          )}
+
           <div>
             <h3 className="font-semibold text-gray-900 text-base leading-tight">
               {title}
@@ -50,7 +94,7 @@ function InternshipCard({ internship }) {
         </div>
 
         {/* Remote badge */}
-        {is_remote && (
+        {work_from_home && (
           <span className="text-xs font-medium bg-green-50 text-green-700 border border-green-200 px-2 py-0.5 rounded-full whitespace-nowrap">
             Remote
           </span>
@@ -65,7 +109,7 @@ function InternshipCard({ internship }) {
               key={index}
               className="text-xs bg-blue-50 text-blue-600 border border-blue-100 px-2 py-0.5 rounded-full"
             >
-              {label}
+              {label?.label_value || label?.label_mobile || ""}
             </span>
           ))}
         </div>
@@ -78,16 +122,13 @@ function InternshipCard({ internship }) {
         <DetailItem
           icon="📍"
           label={
-            is_remote
+            work_from_home
               ? "Remote"
               : location_names?.join(", ") || "Not specified"
           }
         />
-        <DetailItem
-          icon="💰"
-          label={stipend?.salary ? `₹ ${stipend.salary}/month` : "Unpaid"}
-        />
-        <DetailItem icon="🗓️" label={start_date || "Not specified"} />
+        <DetailItem icon="💰" label={stipendText()} />
+        <DetailItem icon="🗓️" label={startDateText} />
         <DetailItem icon="⏱️" label={duration || "Not specified"} />
       </div>
 
@@ -95,6 +136,7 @@ function InternshipCard({ internship }) {
       <button className="mt-1 w-full py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium transition-colors duration-200">
         Apply Now
       </button>
+
     </div>
   );
 }
