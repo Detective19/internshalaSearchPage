@@ -16,11 +16,21 @@ const PROXY_URL = `https://corsproxy.io/?url=${encodeURIComponent(BASE_URL)}`;
 export async function fetchInternships() {
   try {
     const response = await fetch(PROXY_URL, {
-      headers: {
-        // Tell the server we accept JSON
-        Accept: "application/json",
-      },
-    });
+  method: "GET",
+
+  headers: {
+    Accept: "application/json, text/plain, */*",
+
+    "Content-Type": "application/json",
+
+    "User-Agent":
+      "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
+
+    Referer: "https://internshala.com/",
+
+    Origin: "https://internshala.com",
+  },
+});
 
     // If HTTP status is not 2xx, throw an error
     if (!response.ok) {
