@@ -1,35 +1,25 @@
-// src/App.jsx — TEMPORARY TEST, we'll replace this in Task 3
+// src/App.jsx — Card preview test
 
-import { useEffect, useState } from "react";
-import { fetchInternships } from "./services/api";
+import InternshipCard from "./components/InternshipCard";
+
+const DUMMY_INTERNSHIP = {
+  title: "Web Development Intern",
+  company_name: "Google India Pvt Ltd",
+  location_names: ["Bangalore", "Mumbai"],
+  stipend: { salary: "15000" },
+  duration: "3 Months",
+  start_date: "Immediately",
+  logo: null,
+  is_remote: true,
+  labels: ["Actively hiring", "Part time"],
+};
 
 function App() {
-  const [internships, setInternships] = useState([]);
-  const [error, setError]= useState(null);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    fetchInternships()
-      .then((data) => {
-        setInternships(data);
-        console.log("✅ Sample internship object:", data[0]);
-      })
-      .catch((err) => setError(err.message))
-      .finally(() => setLoading(false));
-  }, []);
-
-  if (loading) return <p className="p-10 text-blue-500">Loading...</p>;
-  if (error) return <p className="p-10 text-red-500">Error: {error}</p>;
-
   return (
-    <div className="p-10">
-      <h1 className="text-2xl font-bold mb-4">
-        ✅ Fetched {internships.length} internships
-      </h1>
-      {/* Print raw first internship to understand the data shape */}
-      <pre className="bg-gray-100 p-4 rounded text-sm overflow-auto">
-        {JSON.stringify(internships[0], null, 2)}
-      </pre>
+    <div className="min-h-screen bg-gray-100 p-10">
+      <div className="max-w-sm mx-auto">
+        <InternshipCard internship={DUMMY_INTERNSHIP} />
+      </div>
     </div>
   );
 }
