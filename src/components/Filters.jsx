@@ -18,14 +18,7 @@ const DURATION_OPTIONS = [
   "6 Months",
 ];
 
-/**
- * Sidebar filter panel.
- * @param {Object}   props.filters    - Current filter state from Home.jsx
- * @param {Function} props.setFilters - Updater function from Home.jsx
- * @param {Array}    props.profiles   - Unique profile names from API data
- * @param {Array}    props.locations  - Unique location names from API data
- */
-function Filters({ filters, setFilters, profiles, locations }) {
+function Filters({ filters, setFilters, profiles, locations, onClose }) {
 
   const handleChange = (key, value) => {
     setFilters((prev) => ({ ...prev, [key]: value }));
@@ -47,19 +40,30 @@ function Filters({ filters, setFilters, profiles, locations }) {
     filters.stipend !== 0;
 
   return (
-    <aside className="bg-white rounded-xl border border-gray-200 p-5 flex flex-col gap-6 h-fit sticky top-20">
+    <aside className="bg-white rounded-xl border border-gray-200 p-5 flex flex-col gap-6 h-fit">
 
       {/* HEADER */}
       <div className="flex items-center justify-between">
         <h2 className="font-semibold text-gray-800 text-base">Filters</h2>
-        {hasActiveFilters && (
-          <button
-            onClick={handleReset}
-            className="text-xs text-blue-600 hover:underline"
-          >
-            Clear all
-          </button>
-        )}
+        <div className="flex items-center gap-3">
+          {hasActiveFilters && (
+            <button
+              onClick={handleReset}
+              className="text-xs text-blue-600 hover:underline"
+            >
+              Clear all
+            </button>
+          )}
+          {/* Close button — only shown inside mobile drawer */}
+          {onClose && (
+            <button
+              onClick={onClose}
+              className="text-gray-400 hover:text-gray-600 text-xl leading-none"
+            >
+              x
+            </button>
+          )}
+        </div>
       </div>
 
       {/* FILTER 1: Profile */}
