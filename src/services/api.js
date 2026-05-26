@@ -1,14 +1,10 @@
 // src/services/api.js
 
-const BASE_URL =
-  "https://internshala.com/hiring/search";
-
-const PROXY_URL =
-  `https://api.allorigins.win/raw?url=${encodeURIComponent(BASE_URL)}`;
+const BASE_URL = "/api/internships";
 
 export async function fetchInternships() {
   try {
-    const response = await fetch(PROXY_URL);
+    const response = await fetch(BASE_URL);
 
     if (!response.ok) {
       throw new Error(
